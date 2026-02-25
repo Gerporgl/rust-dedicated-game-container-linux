@@ -76,3 +76,8 @@ TODO
 
 ...
 
+### Appendix
+
+Original work and credits (a mix of both):
+ * https://github.com/Didstopia/rust-server
+ * https://github.com/eberdt/docker-rust-server
