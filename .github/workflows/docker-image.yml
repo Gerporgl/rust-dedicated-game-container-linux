@@ -4,6 +4,9 @@ on:
   push:
     tags: [ "v*" ]
 
+env:
+  IMAGE_NAME: rust-server
+
 jobs:
 
   build:
@@ -13,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --target rust-server --file Dockerfile --tag rust-server:$(date +%s) --tag rust-server:latest
+      run: docker build . --target rust-server --file Dockerfile --tag $IMAGE_NAME
     - name: Log in to registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Push image
