@@ -10,7 +10,8 @@ env:
 jobs:
 
   build:
-
+    packaging:
+        permissions: write-all
     runs-on: ubuntu-latest
 
     steps:
