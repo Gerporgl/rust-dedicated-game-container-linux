@@ -1,0 +1,11 @@
+#!/bin/bash
+RUST_ENV_FILE=/home/steam/steamcmd/rust/rust.env
+set -o allexport
+source $RUST_ENV_FILE
+set +o allexport
+cd /app
+if [ $(pidof RustDedicated) ]; then
+    node /app/shutdown_app/app.js
+else
+    echo "stop-rust: Rust is not running, no need to tell it to stop"
+fi

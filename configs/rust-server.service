@@ -1,0 +1,16 @@
+[Unit]
+Description=Rust Game Server
+After=network-online.target
+
+[Service]
+ExecStart=/app/rust-game
+ExecStop=/app/stop-rust
+Type=exec
+User=steam
+RestartSec=1
+RestartSteps=5
+RestartMaxDelaySec=1200
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

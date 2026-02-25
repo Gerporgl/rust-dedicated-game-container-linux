@@ -1,0 +1,15 @@
+{
+  "name": "heartbeat_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodejs app.js"
+  },
+  "author": "",
+  "private": "true",
+  "dependencies": {
+    "source-server-query": "^3.0.3",
+    "ws": "^8.19.0"
+  }
+}
