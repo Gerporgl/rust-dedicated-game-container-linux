@@ -28,9 +28,11 @@ To build the image, and run your first rust server, simple run the following com
 ```
 It will prompt you to set a root password, and will create a subfolder rust_data which will contain all the rust server files that you want to persist and care about.
 
-It will take some time initially as it will need to build the docker image. Afterward, you can use docker_run_only.sh directly.
+An important detail to understand is that the root password is not set into the docker image itself, but is set at runtime. You can take a look inside docker_run_only.sh to see how it's done.
 
-After the server started, it will download rust and enable the Carbon plugin framework with the correct configs to allow linux players.
+Initially, it will take some time to start as it needs to build the docker image first. Afterward, you can use docker_run_only.sh directly.
+
+After the server started, it will download rust and enable the Carbon plugin framework with the correct configs to allow linux players to join, you can disable that in the rust.env if this is not what you want.
 
 A default rust.env will be placed in ./rust_data/rust.env that you can edit afterward.
 A new world seed will be generated, and a random rcon password as well.
