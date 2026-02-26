@@ -21,16 +21,14 @@ I also focused on hosting this container with Proxmox VE and the built-in LXC co
 
 ## Quick start
 
-To build the image, and run your first rust server, simple run the following command:
+To download the image from github and run it locally on your docker/podman, simple run the following command:
 
 ```
 ./docker_run.sh
 ```
 It will prompt you to set a root password, and will create a subfolder rust_data which will contain all the rust server files that you want to persist and care about.
 
-An important detail to understand is that the root password is not set into the docker image itself, but is set at runtime. You can take a look inside docker_run_only.sh to see how it's done.
-
-Initially, it will take some time to start as it needs to build the docker image first. Afterward, you can use docker_run_only.sh directly.
+An important detail to understand is that the root password is not set into the docker image itself, but is set at runtime. You can take a look inside docker_run.sh to see how it's done.
 
 After the server started, it will download rust and enable the Carbon plugin framework with the correct configs to allow linux players to join, you can disable that in the rust.env if this is not what you want.
 
@@ -58,6 +56,20 @@ journalctl -u rust-server
 ```
 
 ## Advanced use & other details
+
+### Building your own docker image locally
+
+To build the image, and run the rust server, simple run the following command:
+```
+./docker_build_and_run.sh
+```
+
+It will take some time to start as it needs to build the docker image first. Afterward you can use docker_run_local.sh directly
+
+If you only want to build the image use:
+```
+./docker_build.sh
+```
 
 ### rcon command
 
