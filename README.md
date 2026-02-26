@@ -1,4 +1,7 @@
-# Another Rust Game Dedicated Server Container
+# Another Rust Game Dedicated Server Container (for podman & LXC)
+
+NOTE! It seems the container only works so far with podman on linux or LXC(Proxmox), or those are the 2 I am using and tested.
+I tried it briefly with docker on linux and it does not work. I do not have time to debug that, I am not using and won't be using docker. Just install podman, you can install it alongside docker if you don't install the docker-podman alias.
 
 ## Introduction
 
@@ -15,20 +18,20 @@ This new container image uses the latest Ubuntu 24.04 LTS base, and node.js 24 f
 
 It also run with a full systemd init which allow to run rust as a systemd service and have all the convenience of restarting it with expential backoffs, logging using journalctl with timestamps, etc. I was against that idea originally, as I prefered to have a simple bash entrypoint... but wrapping all logs properly with timestamps and everything else I wanted turned out to be very hugly and clunky... and after trying out the default Ubuntu container image in Proxmox CT with LXC, I really liked the idea of having a full systemd, and found that the number of processes is very low, and the startup time is almost instant. And since Rust takes a very long time to start and uses a lot of memory and disk space (in comparison), I did not see any reason to try to cut the corners.
 
-The container also has a ssh server pre-installed and accessible, althought by default there is no allowed credentials.
+The container also has a ssh server pre-installed and accessible, althought by default there is no credentials allowed.
 
 I also focused on hosting this container with Proxmox VE and the built-in LXC containers, as it makes for a very efficient hosting solution compared to hosting this inside a vm in docker like I was doing before.
 
 ## Quick start
 
-To download the image from github and run it locally on your docker/podman, simple run the following command:
+To download the image from github and run it locally on your podman, simply run the following command:
 
 ```
-./docker_run.sh
+./run.sh
 ```
 It will prompt you to set a root password, and will create a subfolder rust_data which will contain all the rust server files that you want to persist and care about.
 
-An important detail to understand is that the root password is not set into the docker image itself, but is set at runtime. You can take a look inside docker_run.sh to see how it's done.
+An important detail to understand is that the root password is not set into the docker image itself, but is set at runtime. You can take a look inside run.sh to see how it's done.
 
 After the server started, it will download rust and enable the Carbon plugin framework with the correct configs to allow linux players to join, you can disable that in the rust.env if this is not what you want.
 
@@ -61,14 +64,14 @@ journalctl -u rust-server
 
 To build the image, and run the rust server, simple run the following command:
 ```
-./docker_build_and_run.sh
+./build_and_run.sh
 ```
 
-It will take some time to start as it needs to build the docker image first. Afterward you can use docker_run_local.sh directly
+It will take some time to start as it needs to build the docker image first. Afterward you can use run_local.sh directly
 
 If you only want to build the image use:
 ```
-./docker_build.sh
+./build.sh
 ```
 
 ### rcon command
@@ -82,7 +85,7 @@ This should return the list of players on your server, if any.
 
 ### Setup your ssh public key to connect with ssh
 
-An example can be found in docker_run_with_ssh.sh (TODO)
+An example can be found in run_with_ssh.sh (TODO)
 
 ### rust.env configuration details
 
