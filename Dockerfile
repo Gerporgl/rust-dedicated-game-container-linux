@@ -152,7 +152,7 @@ RUN chown root:root /app/cat_authkeys.sh && echo "steam ALL=NOPASSWD: /app/cat_a
     systemctl enable rust-server.service
 
 ADD --chmod=000 LICENSE.md /app
-# This step may not be desirable, as it squish all layers into a single file system layer and loses all previous layers
+# This step may not be desirable, as it squash all layers into a single file system layer and loses all previous layers
 # traces
 FROM scratch as rust-server
 
