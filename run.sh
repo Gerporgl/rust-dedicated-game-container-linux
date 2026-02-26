@@ -51,7 +51,7 @@ $command create --rm -it \
     -p 0.0.0.0:28015:28015/udp \
     -p 0.0.0.0:27015:27015/udp \
     -p 0.0.0.0:28016:28016 \
-    -p 0.0.0.0:14080:8080 \
+    -p 0.0.0.0:8080:8080 \
     $opts \
     -v $(pwd)/rust_data:/home/steam/steamcmd/rust $@ \
     --name pure-rust-server-container \
