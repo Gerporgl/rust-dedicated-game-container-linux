@@ -1,7 +1,7 @@
 # Another Rust Game Dedicated Server Container (for podman & LXC)
 
-NOTE! It seems the container only works so far with podman on linux or LXC(Proxmox), or those are the 2 I am using and tested.
-I tried it briefly with docker on linux and it does not work. I do not have time to debug that, I am not using and won't be using docker. Just install podman, you can install it alongside docker if you don't install the docker-podman alias.
+NOTE! It seems the container works better with podman on linux or LXC(Proxmox), those are the 2 I am using and tested.
+For Docker, we have to set some extra permissions, which may seems like more privilege for some reasons. The run.sh command has been updated to work with Docker, but podman or LXC is recommended since their out of the box experience is considered unprivileged and these container tools were more designed to run containers using systemd init as an entrypoint.
 
 ## Introduction
 

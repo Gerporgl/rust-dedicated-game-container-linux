@@ -18,7 +18,6 @@ fi
 mkdir -p ./rust_data
 
 podman=$(podman -v 2>/dev/null | grep -c -i podman)
-
 if [ "$podman" == "1" ]; then
     # This is to keep the user id the same as in the container for the mounted file system,
     # so the steam user is id 1000, and may be the same as the local user, so that is easier to manage
@@ -26,12 +25,19 @@ if [ "$podman" == "1" ]; then
 	opts="--userns=keep-id"
 	command=podman
 	echo "You have podman installed"
+    podman rm -fi pure-rust-server-container
 else
-	uidopt=""
-	command=docker
-	echo "You are NOT using podman... this will not work. You'll need to install podman."
-    echo "Good luck!"
-    exit 1
+    opts=" --tmpfs /run
+            --tmpfs /run/lock
+            --tmpfs /tmp
+            --tmpfs /run/dbus
+            --security-opt systempaths=unconfined
+            --security-opt label=disable
+            --cgroupns host
+            -v /sys/fs/cgroup:/sys/fs/cgroup:rw "
+    command=docker
+    echo "You are NOT using podman... some permissions adjustments were needed for Docker. Podman or LXC is recommended instead."
+    docker rm -f pure-rust-server-container
 fi
 
 echo "============================================================================"
@@ -45,7 +51,6 @@ echo "==========================================================================
 read -s -p "Enter the desired root password: " root_password && echo ""
 echo "Ok"
 
-podman rm -fi pure-rust-server-container
 $command create --rm -it \
     -p 0.0.0.0:2222:22 \
     -p 0.0.0.0:28015:28015/udp \
