@@ -94,6 +94,7 @@ install_or_update()
 {
 	# Install Rust from install.txt
 	echo "Installing or updating Rust.. (this might take a while, be patient)"
+	rm -f $STEAMCMDDIR/rust/steamapps/appmanifest_*
 	bash $STEAMCMDDIR/steamcmd.sh +runscript /app/install.txt
 
 	# Terminate if exit code wasn't zero
