@@ -74,6 +74,10 @@ RUN apt-get update && \
     rm /usr/lib/systemd/system/e2scrub_all.timer && \
     rm /usr/lib/systemd/system/fstrim.timer && \
     rm /lib/systemd/system/motd-news.timer && \
+    # ping is nice to have for ourself
+    # but rust seems to try to do broken things on startup with ping
+    # so we deny permissions to use it, which silence some startup "PING parsing error" messages
+    chmod 744 /usr/bin/ping && \
     # Rename the ubuntu user (which uses the standard uid 1000) to be our steam user and create its home folder
     groupmod \
         -n steam ubuntu && \
