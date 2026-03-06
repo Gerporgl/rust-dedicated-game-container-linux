@@ -346,9 +346,9 @@ fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$STEAMCMDDIR/rust/RustDedicated_Data/Plugins:$STEAMCMDDIR/rust/RustDedicated_Data/Plugins/x86_64
 
 
-echo "=========================================================================================="
-echo "Launching RustDedicated now! Expect to see a lot of nonsensical gabage log to follow..."
-echo "=========================================================================================="
+echo "========================================================================================"
+echo "Launching RustDedicated now! Expect to see a lot of nonsensical garbage log to follow..."
+echo "========================================================================================"
 
 $STEAMCMDDIR/rust/RustDedicated $RUST_STARTUP_COMMAND "${ARGUMENTS[@]}"
 exit 0
