@@ -53,9 +53,9 @@ echo "Ok"
 
 $command create --rm -it \
     -p 127.0.0.1:2222:22 `#  SSH port remap to non privileged port 2222 ` \
-    -p 0.0.0.0:28015:28015/udp `#  Game port` \
-    -p 0.0.0.0:28016:28016/udp `#  Query port` \
-    -p 0.0.0.0:28017:28017 `# Rust+ App port` \
+    -p 28015:28015/udp `#  Game port` \
+    -p 28016:28016/udp `#  Query port` \
+    -p 28017:28017 `# Rust+ App port` \
     -p 127.0.0.1:28666:28666 `#  RCON port (not secure, only expose on localhost or local network)` \
     -p 127.0.0.1:8080:8080 `#  Webrcon (not secure, only expose on localhost or local network)` \
     $opts \
