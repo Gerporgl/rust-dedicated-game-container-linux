@@ -83,7 +83,12 @@ rcon players
 ```
 This should return the list of players on your server, if any.
 
-If you like this containter image and it works well for you, you are welcome to "star" this repo, this will make me feel good :relaxed:
+You can also now run rcon interractively:
+```
+rcon -it
+```
+
+If you like this container image and it works well for you, you are welcome to "star" this repo, this will make me feel good :relaxed:
 
 ### Setup your ssh public key to connect with ssh
 
