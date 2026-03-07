@@ -1,7 +1,5 @@
-# We now just use bare ubuntu, it works best with lxc and systemd tty console and shutdown
-# and steamcmd is very trivial to install and we already were downloading it everytime on start
-# there doesn't seem to be any need to have it installed with a special
-# image or distro package
+# Use ubuntu as base, it works best with lxc and systemd tty console and shutdown
+# Steamcmd is trivial to install, we are already downloading it each time on rust service start
 FROM ubuntu:24.04
 
 # Default Node.js version
@@ -9,8 +7,6 @@ ARG NODE_VERSION=24
 
 # We run with systemd, so we must be root
 # the rust service run as the steam user (see rust-server.service)
-# The whole thing is a container anyway, being root inside does not give it root provilege outside
-# especially when running it in non privileged mode as non-root in the host system
 USER root
 
 # Install dependencies and verify that Node.js is working
@@ -27,23 +23,21 @@ RUN apt-get update && \
     nginx \
     # This is required (and the only thing really needed), for steamcmd (and rust) to run
     lib32stdc++6 \
-
-    # for bsdtar that supports zip format
+    # This is for bsdtar that supports the zip format, needed for umod only
     libarchive-tools \
     # There is a ssh server running out of the box, but there is no authorized key by default and no
-    # password authentication allowed with our custom config
+    # password authentication allowed with our provided config file
     openssh-server \
     # For sudoing some scripts we require sudo to give ourself ownership on mounted volumes
     # as well as giving users who have ssh root access to also login with the steam user via ssh directly
     sudo \
-    # For convenience, instal nano
+    # For convenience, we instal nano
     nano \
-    # Network tools such as ping and host command
+    # Basic network tools such as ping and host command
     iputils-ping \
     bind9-host \
     # Full systemd init entrypoint
     init && \
-    # Networkd based stack (better ipv6 and dhcp support than network interfaces when running on proxmox/lxc)
     apt-get -y remove dbus && \
     apt-get -y autoremove && \
     apt-get -y clean  && \
@@ -52,7 +46,7 @@ RUN apt-get update && \
     /var/lib/apt/lists/* \
     /var/tmp/* \
     /tmp/* && \
-    # Remove clutter messages on login
+    # Remove clutter messages on bash/ssh login
     # Perhaps replace this in future with rust related info (players online, useful help and commands (rcon, etc.))
     rm /etc/update-motd.d/10* && rm /etc/update-motd.d/50* && rm /etc/update-motd.d/60* && \
     # Remove default nginx stuff
@@ -92,10 +86,8 @@ RUN apt-get update && \
 	chown -R steam:steam /home/steam && \
     rm -f /home/ubuntu -R
 
-# This is not so useful anymore, this env variable does not get carried in the systemd init and our service
-# we have to set it again in our startup script...
-# However we re-use it here in the Dockerfile later on
-ENV STEAMCMDDIR /home/steam/steamcmd
+# This is hardcoded in several other places, so changing just this will not work
+ARG STEAMCMDDIR /home/steam/steamcmd
 
 RUN mkdir /app
 WORKDIR /app
