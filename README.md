@@ -5,7 +5,7 @@ For Docker, we have to set some extra permissions, which may seems like more pri
 
 ## Introduction
 
-Why create a new Rust Dedicated server container and not just linux GSM?
+Why create a new Rust Dedicated server container and not just use linux GSM?
 
 Because!!!!!!
 
@@ -41,7 +41,7 @@ Again, all of those can be changed, and the server just needs to be restarted to
 
 The webrcon will be accessible at http://localhost:8080 and the password is available in the rust.env file generated.
 
-To view the rust server logs, you can use those commands inside the container:
+To view the rust server logs, you can run the following commands inside the container:
 
 To view live logs in real time
 ```
@@ -62,14 +62,14 @@ journalctl -u rust-server
 
 ### Building your own docker image locally
 
-To build the image, and run the rust server, simple run the following command:
+To build the image, and run the rust server, simply run the following command:
 ```
 ./build_and_run.sh
 ```
 
 It will take some time to start as it needs to build the docker image first. Afterward you can use run_local.sh directly
 
-If you only want to build the image use:
+If you only want to build the image, use:
 ```
 ./build.sh
 ```
@@ -82,6 +82,8 @@ For example:
 rcon players
 ```
 This should return the list of players on your server, if any.
+
+If you like this containter image and it works well for you, you are welcome to "star" this repo, this will make me feel good :relaxed:
 
 ### Setup your ssh public key to connect with ssh
 
