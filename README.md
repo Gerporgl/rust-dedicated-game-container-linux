@@ -29,6 +29,11 @@ To download the image from github and run it locally on your podman, simply run 
 ```
 ./run.sh
 ```
+If you didn't clone this repo, you can run this instead, which will get the run.sh and then run it:
+```
+curl -s https://raw.githubusercontent.com/Gerporgl/rust-dedicated-game-container-linux/refs/heads/master/run.sh > /tmp/_rrun.sh && bash  /tmp/_rrun.sh
+```
+
 It will prompt you to set a root password, and will create a subfolder rust_data which will contain all the rust server files that you want to persist and care about.
 
 An important detail to understand is that the root password is not set into the docker image itself, but is set at runtime. You can take a look inside run.sh to see how it's done.
