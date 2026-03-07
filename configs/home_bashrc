@@ -3,6 +3,7 @@
 # for examples
 TERM=xterm-color\
 
+export STEAMCMDDIR=/home/steam/steamcmd
 export RUST_ENV_FILE=/home/steam/steamcmd/rust/rust.env
 if [ -f $RUST_ENV_FILE ]; then
     set -o allexport
