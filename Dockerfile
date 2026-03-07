@@ -42,9 +42,9 @@ RUN apt-get update && \
     iputils-ping \
     bind9-host \
     # Full systemd init entrypoint
-    init \
+    init && \
     # Networkd based stack (better ipv6 and dhcp support than network interfaces when running on proxmox/lxc)
-    networkd-dispatcher && \
+    apt-get -y remove dbus && \
     apt-get -y autoremove && \
     apt-get -y clean  && \
     echo "Nodejs version: $(node -v) npm version: $(npm -v)" && \
@@ -62,7 +62,6 @@ RUN apt-get update && \
     # Enable some service and remove a bunch of unwanted automatic timers
     # Updates will have to be run manually or with new containers builds
     # Perhaps these could be done on rust updates in the future, and force a container restart
-    systemctl enable systemd-networkd.service && \ 
     rm /etc/systemd/system/timers.target.wants/apt* && \
     rm /etc/systemd/system/timers.target.wants/dpkg* && \
     rm /etc/systemd/system/timers.target.wants/e2scrub* && \
