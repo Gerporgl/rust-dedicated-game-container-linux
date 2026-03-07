@@ -1,5 +1,6 @@
 #!/bin/bash
 
+podman=$(podman -v 2>/dev/null | grep -c -i podman)
 if [ "$podman" == "1" ]; then
 	command=podman
 else
@@ -7,4 +8,4 @@ else
 	echo "You are NOT using podman! Good luck!"
 fi
 
-DOCKER_BUILDKIT=1 $command build --target rust-server -t rust-server:latest .
+DOCKER_BUILDKIT=1 $command build --squash -t rust-server:latest .

@@ -2,7 +2,7 @@
 # and steamcmd is very trivial to install and we already were downloading it everytime on start
 # there doesn't seem to be any need to have it installed with a special
 # image or distro package
-FROM ubuntu:24.04 as file_system_setup
+FROM ubuntu:24.04
 
 # Default Node.js version
 ARG NODE_VERSION=24
@@ -156,15 +156,6 @@ RUN chown root:root /app/cat_authkeys.sh && echo "steam ALL=NOPASSWD: /app/cat_a
     systemctl enable rust-server.service
 
 ADD --chmod=000 LICENSE.md /app
-# This step may not be desirable, as it squash all layers into a single file system layer and loses all previous layers
-# traces
-FROM scratch as rust-server
-
-USER root
-COPY --from=file_system_setup / /
-
-LABEL org.opencontainers.image.ref.name=ubuntu
-LABEL org.opencontainers.image.version=24.04
 
 # Comment the following line, it is mostly only to add your own ssh public key to test ssh locally
 # Container orchestrator should allow you to configure the key at setup time (for example proxmox CT will do that)
