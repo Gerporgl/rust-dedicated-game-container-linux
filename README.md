@@ -29,7 +29,7 @@ To download the image from github and run it locally on your podman, simply run 
 ```
 ./run.sh
 ```
-If you didn't clone this repo, you can run this instead, which will get the run.sh and then run it:
+If you didn't clone this repo, you can run this command instead, which will get the run.sh and then run it:
 ```
 curl -s https://raw.githubusercontent.com/Gerporgl/rust-dedicated-game-container-linux/refs/heads/master/run.sh > /tmp/_rrun.sh && bash  /tmp/_rrun.sh
 ```
