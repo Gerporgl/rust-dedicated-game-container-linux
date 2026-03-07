@@ -8,4 +8,4 @@ else
 	echo "You are NOT using podman! Good luck!"
 fi
 
-DOCKER_BUILDKIT=1 $command build --squash -t rust-server:latest .
+ DOCKER_BUILDKIT=1 $command build $@ -t rust-server:latest .
