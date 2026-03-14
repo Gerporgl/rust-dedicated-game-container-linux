@@ -19,6 +19,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     # Install nodejs, along with all dependencies... such as python3 that seems required
     nodejs \
+    # jq is useful for shell commands like rcon playerlist | jq ...
+    jq \
     # We use nginx to serve webrcon static pages
     nginx \
     # This is required (and the only thing really needed), for steamcmd (and rust) to run
@@ -138,7 +140,8 @@ RUN chown -R steam:steam \
     /home/steam \
     /app \
     /usr/share/nginx/html \
-    /var/log/nginx
+    /var/log/nginx && \
+    ln -s /app/rust_motd /etc/update-motd.d/10-rust_motd
 
 # These should be done here, after changing ownership so that these files remain editable only by root
 RUN chown root:root /app/cat_authkeys.sh && echo "steam ALL=NOPASSWD: /app/cat_authkeys.sh" >> /etc/sudoers && \
