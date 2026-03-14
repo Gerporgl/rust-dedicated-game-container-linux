@@ -21,6 +21,7 @@ RUN apt-get update && \
     nodejs \
     # jq is useful for shell commands like rcon playerlist | jq ...
     jq \
+    psmisc \
     # We use nginx to serve webrcon static pages
     nginx \
     # This is required (and the only thing really needed), for steamcmd (and rust) to run

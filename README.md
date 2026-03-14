@@ -3,6 +3,16 @@
 NOTE! It seems the container works better with podman on linux or LXC(Proxmox), those are the 2 I am using and tested.
 For Docker, we have to set some extra permissions, which may seems like more privilege for some reasons. The run.sh command has been updated to work with Docker, but podman or LXC is recommended since their out of the box experience is considered unprivileged and these container tools were more designed to run containers using systemd init as an entrypoint.
 
+## Screenshot
+
+![Screenshot of the "app"](screenshot.png)
+```
+systemd─┬─bash─┬─RustDedicated
+        │      └─auto_updater
+        ├─nginx───nginx
+        └─systemd-journal
+```
+
 ## Introduction
 
 Why create a new Rust Dedicated server container and not just use linux GSM?
