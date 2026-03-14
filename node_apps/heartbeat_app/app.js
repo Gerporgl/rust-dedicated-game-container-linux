@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+process.title = "heartbeat_app"
+
 const debug = false;
 
 const query = require('source-server-query');

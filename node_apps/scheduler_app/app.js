@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.title = "auto_updater"
+
 var debug = false
 
 var childProcess = require('child_process')

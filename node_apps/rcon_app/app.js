@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.title = "rcon"
+
 const readline = require("readline");
 const parseArgs = require("node:util").parseArgs;
 

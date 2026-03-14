@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.title = "shutdown_app"
+
 var serverHostname = 'localhost'
 var serverPort = process.env.RUST_RCON_PORT
 var serverPassword = process.env.RUST_RCON_PASSWORD
