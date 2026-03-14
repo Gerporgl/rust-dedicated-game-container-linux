@@ -1,0 +1,71 @@
+#!/bin/bash
+
+export STEAMCMDDIR=/home/steam/steamcmd
+export RUST_ENV_FILE=$STEAMCMDDIR/rust/rust.env
+
+if  [ -f $RUST_ENV_FILE ]; then
+    set -o allexport
+    source $RUST_ENV_FILE
+    set +o allexport
+else
+    echo "(unable to find the rust environment file in $RUST_ENV_FILE to display a proper motd)"
+    exit 1
+fi
+serverinfo=$(rcon -s -t 50 serverinfo | jq)
+playerlist=$(rcon -s -t 50 playerlist | jq)
+var="server.description"
+serverdescription=$(rcon -s -t 50 "$var")
+serverdescription="${serverdescription/$var: /}"
+serverdescription="$(echo $serverdescription | jq -r)"
+
+#echo "serverinfo: $serverinfo"
+#echo "playerlist: $playerlist"
+#echo "serverdescription: $serverdescription"
+echo ""
+echo "=============================================================================="
+echo ""
+echo -e "\e[0;36mWelcome to your Rust Dedicated Game Container!\e[0m"
+echo ""
+
+if [[ -n "$serverinfo" ]]; then
+    hostname=$(echo $serverinfo | jq '.Hostname')
+    entitycount=$(echo $serverinfo | jq '.EntityCount')
+    uptime=$(echo $serverinfo | jq '.Uptime')
+    map=$(echo $serverinfo | jq '.Map')
+    framerate=$(echo $serverinfo | jq '.Framerate')
+    memory=$(echo $serverinfo | jq '.Memory')
+    version=$(echo $serverinfo | jq '.Version')
+    protocol=$(echo $serverinfo | jq '.Protocol')
+    maxplayers=$(echo $serverinfo | jq '.MaxPlayers')
+    playercount=$(echo $serverinfo | jq '.Players')
+    days=$((uptime / 86400))
+    formatted_uptime="$days days $(date -u -d "@${uptime}" +%Hh%Mm%Ss)"
+    echo -e "\e[32mRust Hostname\e[0m: $hostname"
+    echo -e "\e[32mDescription\e[0m:"
+    echo -e "\e[33m$serverdescription\e[0m"
+    echo ""
+    echo -e "\e[32mMap\e[0m: $map"
+    echo -e "\e[32mUptime\e[0m: $formatted_uptime \e[32mFPS\e[0m: $framerate \e[32mEntity\e[0m: $entitycount \e[32mMemory\e[0m: $memory \e[32mMax players\e[0m: $maxplayers"
+    echo -e "\e[32mGame version\e[0m: $version \e[32mProtocol\e[0m: $protocol"
+    echo -e -n "\e[32mPlayers online ($playercount)\e[0m"
+    if [[ "$playercount" > 0 ]];then
+        echo -e ": \e[33m$(echo  $playerlist | jq -r '[.[].DisplayName ] | join("\u001b[0m,\u001b[33m ")')\e[0m"
+    else
+        echo ""
+    fi
+else
+    echo "(Rust server is currently not running or it starting up)"
+fi
+
+echo ""
+echo -e "\e[32mSome useful commands\e[0m:"
+echo -e "* \e[1m\e[97mjournalctl -u rust-server -f\e[0m to view rust server logs in real time"
+echo -e "* \e[1m\e[97mjournalctl -u rust-server | cat\e[0m to retrieve / print all logs"
+echo -e "* \e[1m\e[97mrcon playerlist\e[0m to retrieve the latest playerlist with rcon"
+echo -e "* \e[1m\e[97mrcon -i\e[0m to run rcon commands interactively "
+echo -e "* \e[1m\e[97mrcon -f chat\e[0m to run rcon commands interactively and view live chat message printed at the same time"
+echo -e "* \e[1m\e[97mrcon -f chat -f generic\e[0m to run rcon commands interactively and view live chat and generic messages"
+echo -e "* \e[1m\e[97mrcon -f any\e[0m to run rcon commands interactively and view all rcon messages types printed"
+echo ""
+echo "=============================================================================="
+echo ""
