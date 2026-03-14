@@ -1,31 +1,84 @@
 #!/usr/bin/env node
 
 const readline = require("readline");
+const parseArgs = require("node:util").parseArgs;
 
-var debug = false;
+const { values, positionals } = parseArgs({
+    options: {
+        interactive: {
+            type: 'boolean',
+            short: 'i',
+            default: false,
+        },
+        filter: {
+            type: 'string',
+            short: 'f',
+            default: [],
+            multiple: true,
+        },
+        timeout: {
+          type: 'string',
+          short: 't',
+          default: '1000',
+        },
+        silent: {
+          type: 'boolean',
+          short: 's',
+          default: false,
+        },
+        debug: {
+          type: 'boolean',
+          short: 'd',
+          default: false,
+        },
+    },
+    allowPositionals: true,
+    strict: false,
+});
+
+var debug = values.debug;
+
+if(debug){
+  console.log('Values:', values);
+  console.log('Positionals:', positionals);
+}
+
+var timeout= parseInt(values.timeout);
+if(isNaN(timeout))
+  timeout=1000;
 var exitcode=1;
 var argumentString = ''
-var interractive_session=undefined;
-var args = process.argv.splice(process.execArgv.length + 2)
-if(args[0] == '-it'){
-  console.log("Running interactively (ctrl+c to exit)");
+var interactive_session=undefined;
 
-  interractive_session = readline.createInterface({
+var ourselves=Math.floor(Math.random()*(100000));
+var alltypes =  [];
+
+if(values.interactive || (values.filter != undefined && values.filter.length > 0)){
+  if(values.interactive)
+    console.log("Running \x1b[1;32minteractively\x1b[0m (ctrl+c to exit)");
+  else
+  {
+    alltypes = values.filter;
+    console.log(`Running in live interactive view with Type filter: \x1b[1;32m${alltypes}\x1b[0m (ctrl+c to exit)`);
+  }
+
+  interactive_session = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
-  interractive_session.on("close", function() {
+  interactive_session.on("close", function() {
     process.exit(0);
   });
 }
-else{
-  for (var i = 0; i < args.length; i++) {
-    if (i === args.length - 1) argumentString += args[i]
-    else argumentString += args[i] + ' '
+else
+{
+  for (var i = 0; i < positionals.length; i++) {
+    if (i === positionals.length - 1) argumentString += positionals[i]
+    else argumentString += positionals[i] + ' '
   }
 
   if (argumentString.length < 1) {
-    console.log('RconApp::Error: Please specify an RCON command or -it for an interractive session')
+    console.log('RconApp::Error: Please specify an RCON command or -i for an interactive session or --filter to force an interactive session with type filters')
     process.exit(exitcode)
   }
 }
@@ -37,7 +90,6 @@ var serverHostname = 'localhost'
 var serverPort = process.env.RUST_RCON_PORT
 var serverPassword = process.env.RUST_RCON_PASSWORD
 
-var ourselves=Math.floor(Math.random()*(100000));
 
 if(debug)
   console.log("We have identifier",ourselves);
@@ -46,24 +98,25 @@ var WebSocket = require('ws')
 var ws = new WebSocket('ws://' + serverHostname + ':' + serverPort + '/' + serverPassword)
 ws.on('open', function open () {
     messageSent = true
-    if(interractive_session){
+    if(interactive_session){
       onUserInput(0);
     }
     else{
       ws.send(createPacket(argumentString))
       setTimeout(function () {
         ws.close()
-        console.log("RconApp::Error: no response (perhaps the command is invalid?)");
+        if(!values.silent)
+          console.log("RconApp::Error: no response (perhaps the command is invalid?)");
         process.exit(exitcode)
-      }, 1000)
-  
+      }, timeout)
+ 
     }
 })
 
 function onUserInput(input){
   if(input)
     ws.send(createPacket(input))
-  interractive_session.question("",  onUserInput);
+  interactive_session.question("",  onUserInput);
 }
 
 ws.on('message', function (data, flags) {
@@ -74,19 +127,33 @@ ws.on('message', function (data, flags) {
       console.log("Message:",json);
     if (json !== undefined) {
       if (json.Message !== undefined && json.Message.length > 0
-          && json.Identifier == ourselves) {
-        console.log(json.Message);
-        if(!interractive_session){
-          setTimeout(function() {
+          && (json.Identifier == ourselves || (alltypes.includes(json.Type.toLowerCase() ) || (alltypes.includes('any')) ))) {
+        if(json.Type == 'Chat'){
+                var chatMsg = JSON.parse(json.Message);
+          console.log(`${chatMsg.Channel == 0 ? '\x1b[1;33m[GLOBAL]\x1b[0m' : '\x1b[1;32m[TEAM]\x1b[0m'} \x1b[1;34m${chatMsg.Username}\x1b[0m: ${chatMsg.Message}`);
+        }
+        else
+        {
+          console.log(json.Message);
+          if(!interactive_session){
+            setTimeout(function() {
             exitcode=0;
             ws.close();
             ws.terminate();
-          },25);
-        }
+            },25);
+	        }
+	      }
       }
-    } else console.log('RconApp::Error: Invalid JSON received')
+    } else
+    {
+      if(!values.silent){
+        console.log('RconApp::Error: Invalid JSON received')
+      }
+    } 
   } catch (e) {
-    if (e) console.log('RconApp::Error:', e)
+    if(!values.silent){
+      if (e) console.log('RconApp::Error:', e)
+    }
   }
 })
 
@@ -95,8 +162,10 @@ ws.on('close', function () {
 });
 
 ws.on('error', function (e) {
-  console.log('RconApp::Error:', e)
-  console.log('Perhaps rust is not up yet or the password is not set?')
+  if(!values.silent){
+    console.log('RconApp::Error:', e)
+    console.log('Perhaps rust is not up yet or the password is not set?')
+  }
   process.exit(exitcode)
 })
 
