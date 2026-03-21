@@ -145,6 +145,11 @@ else
 	echo "There is no manual wipe trigger to process ($STEAMCMDDIR/rust/force_full_wipe or $STEAMCMDDIR/rust/force_map_wipe files are not present). Proceeding with normal startup..."
 fi
 
+if [ -f "$STEAMCMDDIR/rust/force_redownload" ]; then
+	rm -f $STEAMCMDDIR/rust/force_redownload
+	echo "force_redownload file was set! This will delete all rust and carbon binaries, bundles and packages and force a clean redownload!"
+	/app/delete_rust_binaries.sh
+fi
 
 
 # Check which branch to use
