@@ -10,11 +10,15 @@ ARG NODE_VERSION=24
 USER root
 
 # Install dependencies and verify that Node.js is working
-RUN apt-get update && \
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://ubuntu.linux.n0c.ca/ubuntuarchive/|g' /etc/apt/sources.list.d/ubuntu.sources && \
+    sed -i 's|http://security.ubuntu.com/ubuntu/|http://ubuntu.linux.n0c.ca/ubuntuarchive/|g' /etc/apt/sources.list.d/ubuntu.sources && \
+    apt-get update && \
     apt-get remove -y unminimize && apt-get install -y --no-install-recommends \
     ca-certificates \
     software-properties-common curl && \
-    add-apt-repository multiverse && apt-get update && \
+    add-apt-repository multiverse && \
+    dpkg --add-architecture i386 && \
+    apt-get update && \
     curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - && \
     apt-get install -y --no-install-recommends \
     # Install nodejs, along with all dependencies... such as python3 that seems required
@@ -25,7 +29,21 @@ RUN apt-get update && \
     # We use nginx to serve webrcon static pages
     nginx \
     # This is required (and the only thing really needed), for steamcmd (and rust) to run
-    lib32stdc++6 \
+    lib32stdc++6 && \
+    echo steam steam/question select "I AGREE" | debconf-set-selections && \
+    echo steam steam/license note '' | debconf-set-selections && \
+    apt-get install -y --no-install-recommends \
+    # Now adding extra steamcmd / rust libraries that may be needed or needed by plugins
+    # Seems like all that crap is needed at the end, some plugins such as SignArtist
+    # requires libgdiplus to work, which was thought to be a thing from the Windows XP era and no longer needed...
+    # Since it is hard to know everything that a rust dedicated server may need as it still seems
+    # to start without most of this, but may cause weird problems down the road, it may be better to keep all of that.
+    # This comes at the cost of almost doubling the size of the container image (compressed 260MB instead of ~140MB before)
+    steamcmd \
+    libsdl2-2.0-0:i386 \
+    libgdiplus \
+    lib32gcc-s1 \
+    libcurl4-openssl-dev:i386 \
     # This is for bsdtar that supports the zip format, needed for umod only
     libarchive-tools \
     # There is a ssh server running out of the box, but there is no authorized key by default and no
@@ -34,11 +52,13 @@ RUN apt-get update && \
     # For sudoing some scripts we require sudo to give ourself ownership on mounted volumes
     # as well as giving users who have ssh root access to also login with the steam user via ssh directly
     sudo \
-    # For convenience, we instal nano
+    # For convenience, we install nano
     nano \
     # Basic network tools such as ping and host command
     iputils-ping \
     bind9-host \
+    iftop \
+    tcpdump \
     # Full systemd init entrypoint
     init && \
     apt-get -y remove dbus && \
@@ -49,6 +69,11 @@ RUN apt-get update && \
     /var/lib/apt/lists/* \
     /var/tmp/* \
     /tmp/* && \
+    # Trying these symbolic links that were in didtopia base images
+    ln -sf /usr/games/steamcmd /usr/local/bin/steamcmd && \
+    ls -la /usr/lib/*/libcurl.so* && \
+    ln -sf /usr/lib/i386-linux-gnu/libcurl.so.4 /usr/lib/i386-linux-gnu/libcurl.so && \
+    ln -sf /usr/lib/i386-linux-gnu/libcurl.so.4 /usr/lib/i386-linux-gnu/libcurl.so.3 && \
     # Remove clutter messages on bash/ssh login
     # Perhaps replace this in future with rust related info (players online, useful help and commands (rcon, etc.))
     rm /etc/update-motd.d/10* && rm /etc/update-motd.d/50* && rm /etc/update-motd.d/60* && \
