@@ -4,6 +4,8 @@ process.title = "rcon"
 
 const readline = require("readline");
 const parseArgs = require("node:util").parseArgs;
+const MAX_CUSTOM_MSG = 1
+const CUSTOM_CHAT_TAIL = 1
 
 const { values, positionals } = parseArgs({
     options: {
@@ -101,6 +103,8 @@ var ws = new WebSocket('ws://' + serverHostname + ':' + serverPort + '/' + serve
 ws.on('open', function open () {
     messageSent = true
     if(interactive_session){
+      if( alltypes.includes('chat'))
+        ws.send(createPacket('chat.tail', CUSTOM_CHAT_TAIL));
       onUserInput(0);
     }
     else{
@@ -117,8 +121,17 @@ ws.on('open', function open () {
 
 function onUserInput(input){
   if(input)
-    ws.send(createPacket(input))
+  {
+    if (input.toLowerCase() == "chat.tail")
+      ws.send(createPacket(input, CUSTOM_CHAT_TAIL))
+    else
+      ws.send(createPacket(input))
+  }
   interactive_session.question("",  onUserInput);
+}
+
+function print_chat(chatMsg){
+  console.log(`${chatMsg.Channel == 0 ? '\x1b[1;33m[GLOBAL]\x1b[0m' : '\x1b[1;32m[TEAM]\x1b[0m'} \x1b[1;34m${chatMsg.Username}\x1b[0m: ${chatMsg.Message}`);
 }
 
 ws.on('message', function (data, flags) {
@@ -129,10 +142,15 @@ ws.on('message', function (data, flags) {
       console.log("Message:",json);
     if (json !== undefined) {
       if (json.Message !== undefined && json.Message.length > 0
-          && (json.Identifier == ourselves || (alltypes.includes(json.Type.toLowerCase() ) || (alltypes.includes('any')) ))) {
-        if(json.Type == 'Chat'){
-                var chatMsg = JSON.parse(json.Message);
-          console.log(`${chatMsg.Channel == 0 ? '\x1b[1;33m[GLOBAL]\x1b[0m' : '\x1b[1;32m[TEAM]\x1b[0m'} \x1b[1;34m${chatMsg.Username}\x1b[0m: ${chatMsg.Message}`);
+          && ((json.Identifier >= ourselves && json.Identifier <= ourselves+MAX_CUSTOM_MSG) || (alltypes.includes(json.Type.toLowerCase() ) || (alltypes.includes('any')) ))) {
+        if(json.Type == 'Chat' || json.Identifier == ourselves + CUSTOM_CHAT_TAIL){
+          var chatMsg = JSON.parse(json.Message);
+          if (Array.isArray(chatMsg)){
+            for(let i = 0 ; i<chatMsg.length; i++)
+              print_chat(chatMsg[i]);
+          }
+          else
+            print_chat(chatMsg);
         }
         else
         {
@@ -171,10 +189,10 @@ ws.on('error', function (e) {
   process.exit(exitcode)
 })
 
-function createPacket (command) {
+function createPacket (command, id = -1) {
   var packet =
   {
-    Identifier: ourselves,
+    Identifier: id == -1 ? ourselves : ourselves+id,
     Message: command,
     Name: 'WebRcon'
   }
