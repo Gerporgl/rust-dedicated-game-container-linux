@@ -131,7 +131,8 @@ function onUserInput(input){
 }
 
 function print_chat(chatMsg){
-  console.log(`${chatMsg.Channel == 0 ? '\x1b[1;33m[GLOBAL]\x1b[0m' : '\x1b[1;32m[TEAM]\x1b[0m'} \x1b[1;34m${chatMsg.Username}\x1b[0m: ${chatMsg.Message}`);
+  const dateString  = (new Date(chatMsg.Time*1000)).toISOString();
+  console.log(`${dateString} ${chatMsg.Channel == 0 ? '\x1b[1;33m[GLOBAL]\x1b[0m' : '\x1b[1;32m[TEAM]\x1b[0m'} \x1b[1;34m${chatMsg.Username}\x1b[0m: ${chatMsg.Message}`);
 }
 
 ws.on('message', function (data, flags) {
