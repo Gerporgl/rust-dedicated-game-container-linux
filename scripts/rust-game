@@ -148,6 +148,7 @@ fi
 if [ -f "$STEAMCMDDIR/rust/force_redownload" ]; then
 	rm -f $STEAMCMDDIR/rust/force_redownload
 	echo "force_redownload file was set! This will delete all rust and carbon binaries, bundles and packages and force a clean redownload!"
+	echo "NOTE: All CONFIGS, maps, settings and plugins will be PRESERVED"
 	/app/delete_rust_binaries.sh
 fi
 
@@ -250,7 +251,7 @@ if [ "$RUST_CARBON_ENABLED" = "1" ]; then
 							CARBON_URL="${CARBON_BASE_URL}preview_build/Carbon.Linux.Debug.tar.gz"
 							;;
 						"edge")
-							echo "Downlaoding edge release.."
+							echo "Downloading edge release.."
 							CARBON_URL="${CARBON_BASE_URL}edge_build/Carbon.Linux.Debug.tar.gz"
 							;;
 						*)
