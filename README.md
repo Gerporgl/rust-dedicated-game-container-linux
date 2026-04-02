@@ -103,13 +103,11 @@ You can also now run rcon interractively:
 rcon -it
 ```
 
-If you like this container image and it works well for you, you are welcome to "star" this repo, this will make me feel good :relaxed:
-
 ### Setup your ssh public key to connect with ssh
 
 An example can be found in run_with_ssh.sh (TODO)
 
-### rust.env configuration details
+## rust.env configuration details
 
 The server configuration is managed through the `rust.env` file, located under `/home/steam/steamcmd/rust/rust.env`. Below is a detailed breakdown of all available variables:
 
@@ -204,6 +202,9 @@ systemctl restart rust-server
 ```
 
 The triggers are automatically removed after processing, so they can be recreated for future use.
+
+---
+If you like this container image and it works well for you, you are welcome to "star" this repo, this will make me feel good :relaxed:
 
 ### Appendix
 
