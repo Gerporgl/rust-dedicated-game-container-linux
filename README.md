@@ -149,7 +149,7 @@ The server configuration is managed through the `rust.env` file, located under `
 | `RUST_RCON_PASSWORD` | *Auto-generated* | RCON | RCON password |
 | `RUST_RCON_SECURE_WEBSOCKET` | `0` | RCON | Secure WebSocket connections |
 | **Server Mode** |
-| `RUST_START_MODE` | `0` | Mode | `0`=update+start, `1`=update only, `2`=start only |
+| `RUST_START_MODE` | `0` | Mode | `0`=update+start, `1`=update only, `2`=start only, NOTE! Don't use `1` it would cause the service to always restart and apply updates in a loop. This should be removed. |
 
 ---
 
