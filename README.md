@@ -111,9 +111,99 @@ An example can be found in run_with_ssh.sh (TODO)
 
 ### rust.env configuration details
 
-TODO
+The server configuration is managed through the `rust.env` file, located under `/home/steam/steamcmd/rust/rust.env`. Below is a detailed breakdown of all available variables:
 
-...
+---
+
+| Variable | Default | Category | Description |
+|----------|---------|----------|-------------|
+| **Server Ports** |
+| `RUST_SERVER_PORT` | `28015` | Network | Main game server port (UDP) |
+| `RUST_SERVER_QUERYPORT` | `28016` | Network | Query port for browser connectivity |
+| `RUST_SERVER_RCON_PORT` | `28666` | Network | RCON remote console port |
+| `RUST_SERVER_APP_PORT` | `28017` | Network | Rust Companion app port |
+| **World Settings** |
+| `RUST_SERVER_SEED` | *Random on start* | World | Map seed (integer) |
+| `RUST_SERVER_WORLDSIZE` | `4000` | World | Map size (integer) |
+| `RUST_SERVER_LEVEL_URL` | *Empty* | World | Custom map URL (overrides seed/worldsize) |
+| `RUST_SERVER_MAXPLAYERS` | `100` | World | Maximum players |
+| `RUST_SERVER_SAVE_INTERVAL` | `600` | World | Auto-save interval in seconds |
+| **Server Identity** |
+| `RUST_SERVER_IDENTITY` | `default` | Identity | Save directory name |
+| `RUST_SERVER_NAME` | `Dynamic` | Identity | Public server name |
+| `RUST_SERVER_DESCRIPTION` | *Multi-line* | Identity | Public server description |
+| `RUST_SERVER_URL` | `rustmaps.com` | Identity | Server website URL |
+| `RUST_SERVER_BANNER_URL` | *Empty* | Identity | Banner image URL |
+| **Startup Arguments** |
+| `RUST_SERVER_STARTUP_ARGUMENTS` | *See default.env* | Server | Arguments passed on startup |
+| **Updates** |
+| `RUST_UPDATE_CHECKING` | `1` | Updates | Enable automatic update checking |
+| `RUST_UPDATE_BRANCH` | `public` | Updates | Update branch to use |
+| `RUST_HEARTBEAT` | `0` | Updates | Enable heartbeat monitoring |
+| **Plugin Systems** |
+| `RUST_CARBON_ENABLED` | `1` | Plugins | Enable Carbon plugin framework |
+| `RUST_CARBON_UPDATE_ON_BOOT` | `1` | Plugins | Auto-update Carbon on boot |
+| `RUST_CARBON_BRANCH` | *Empty* | Plugins | Carbon branch |
+| `RUST_OXIDE_ENABLED` | `0` | Plugins | Enable Oxide mod framework |
+| `RUST_OXIDE_UPDATE_ON_BOOT` | `1` | Plugins | Auto-update Oxide on boot |
+| **RCON** |
+| `RUST_RCON_WEB` | `1` | RCON | Enable web-based RCON interface |
+| `RUST_RCON_PASSWORD` | *Auto-generated* | RCON | RCON password |
+| `RUST_RCON_SECURE_WEBSOCKET` | `0` | RCON | Secure WebSocket connections |
+| **Server Mode** |
+| `RUST_START_MODE` | `0` | Mode | `0`=update+start, `1`=update only, `2`=start only |
+
+---
+
+> **Note**: All variables shown with `${VARIABLE}` syntax support variable expansion. This means you can use `${RUST_SERVER_SEED}` in your server name, description, or URL, and they will be replaced with the actual value when the server starts.
+
+---
+
+## Special Wipe and Recovery Trigger Files
+
+The `rust-game` script monitors for special trigger files in `$STEAMCMDDIR/rust/` on startup. These provide manual control over server resets and data management without needing to access the file system directly. All triggers are automatically cleaned up after processing.
+
+### force_full_wipe
+
+Force a full wipe, including blueprints
+
+**Effect:** World and blueprints are reset.
+
+### force_map_wipe
+
+Creates a **map wipe only** - resets the world map but preserves blueprints progression.
+
+**Effect:** World regenerates from scratch, but players retain blueprints progression.
+
+For both types of wipe, a backup of the deleted file is created, if you ever need to recover some of them.
+
+### force_redownload
+
+Triggers a **clean re-download** of all Rust game binaries, bundles, and packages. This forces SteamCMD to fetch fresh files when experiencing corruption or update issues.
+
+**Important:** All **configs, maps, settings, and plugins are preserved**. Only the game binary files are affected.
+
+---
+
+## How to Use Trigger Files
+
+Place an empty file in the server's rust folder. The script detects and processes each trigger on every container restart:
+
+```bash
+# Full wipe - use when completely resetting the server
+touch /home/steam/steamcmd/rust/force_full_wipe
+
+# Map wipe - refresh world map while keeping player data
+touch /home/steam/steamcmd/rust/force_map_wipe
+
+# Clean re-download - fix corrupted game files
+touch /home/steam/steamcmd/rust/force_redownload
+
+# Process triggers on restart
+systemctl restart rust-server
+```
+
+The triggers are automatically removed after processing, so they can be recreated for future use.
 
 ### Appendix
 
