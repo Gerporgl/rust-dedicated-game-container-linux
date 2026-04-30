@@ -44,8 +44,9 @@ if [ -f "/home/steam/Steam/appcache/appinfo.vdf" ]; then
 	rm -fr /home/steam/appcache/appinfo.vdf
 fi
 
-# Get the new build id directly from Steam
-NEW_BUILDID="$($STEAMCMDDIR/steamcmd.sh +login anonymous +app_info_update 1 +app_info_print "258550" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"$RUST_UPDATE_BRANCH\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | sed "s/ buildid //g" | xargs)"
+#NEW_BUILDID="$($STEAMCMDDIR/steamcmd.sh +login anonymous +app_info_update 1 +app_info_print "258550" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"$RUST_UPDATE_BRANCH\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | sed "s/ buildid //g" | xargs)"
+# Get the new build id from steamcmd.net public api (avoid 32 bits split lock dmesg on linux)
+NEW_BUILDID=$(curl -s https://api.steamcmd.net/v1/info/258550 | jq '.data."258550".depots.branches.public.buildid' -r)
 # Check that we actually got a new build id
 STRING_SIZE=${#NEW_BUILDID}
 if [ "$STRING_SIZE" -lt "6" ]; then
