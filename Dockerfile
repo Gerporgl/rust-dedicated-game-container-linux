@@ -29,7 +29,9 @@ RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://ubuntu.linux.n0c.ca/ubunt
     # We use nginx to serve webrcon static pages
     nginx \
     # This is required (and the only thing really needed), for steamcmd (and rust) to run
-    lib32stdc++6 && \
+    lib32stdc++6 \
+    lib32gcc-s1 \
+    lib32z1 && \
     echo steam steam/question select "I AGREE" | debconf-set-selections && \
     echo steam steam/license note '' | debconf-set-selections && \
     apt-get install -y --no-install-recommends \
